@@ -1,0 +1,83 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Nested Stack - VPC, Webserver, S3 bucket and RDS setup",
+  "Parameters": {
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "must be the name of an existing EC2 KeyPair.",
+      "Default": "sample-keypair"
+    }
+  },
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/balaji-cloudformation-templates/VPC_Single_Instance_In_Subnet.template",
+        "Parameters": {
+          "KeyName": { "Ref": "KeyName" }
+        }
+      }
+    },
+    "WebServer": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/balaji-cloudformation-templates/VPC_AutoScaling_and_ElasticLoadBalancer.template",
+        "Parameters": {
+          "VpcId": { "Fn::GetAtt" : [ "VPC", "Outputs.VpcId" ] },
+          "Subnets": { "Fn::GetAtt": [ "VPC", "Outputs.Subnets" ] }
+        }
+      }
+    },
+    "RDS": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/balaji-cloudformation-templates/RDS_PIOPS.template"
+      }
+    },
+    "S3": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/balaji-cloudformation-templates/S3_Website_Bucket_With_Retain_On_Delete.template"
+      }
+    }
+  },
+  "Outputs": {
+    "VpcId": {
+      "Description": "VPC Id",
+      "Value": {
+        "Fn::GetAtt": [
+          "VPC",
+          "Outputs.VpcId"
+        ]
+      }
+    },
+    "ApplicationURL": {
+      "Description": "Newly created application url",
+      "Value": {
+        "Fn::GetAtt": [
+          "VPC",
+          "Outputs.URL"
+        ]
+      }
+    },
+    "WebserverUrl": {
+      "Description": "Url of the WebServer",
+      "Value": {
+        "Fn::GetAtt": [
+          "WebServer",
+          "Outputs.URL"
+        ]
+      }
+    },
+    "S3BucketName": {
+      "Description": "S3 bucket name created",
+      "Value": {
+        "Fn::GetAtt": [
+          "S3",
+          "Outputs.BucketName"
+        ]
+      }
+    }
+  }
+}
