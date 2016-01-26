@@ -1,0 +1,618 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters": {
+    "EnvironmentName": {
+      "Description": "The name of the environment",
+      "Type": "String",
+      "AllowedPattern": "^(?!\\-)(?:[a-zA-Z\\d\\-]{0,62}[a-zA-Z\\d])$",
+      "ConstraintDescription": "must be an alphanumeric name (dashes are allowed, except as the first/last character)."
+    },
+    "KeyName": {
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to EC2 instances",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
+      "MinLength": "3",
+      "MaxLength": "41"
+    },
+    "VpcId": {
+      "Description": "Target VPC where the stack will be launched.",
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "TargetSubnet": {
+      "Description": "Target public subnet where the Tableau instance will be deployed",
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "MasterInstanceType": {
+      "Description": "salt-master EC2 Instance Type",
+      "Type": "String",
+      "Default": "t2.medium",
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "t2.large"
+      ],
+      "ConstraintDescription": "Must be a valid EC2 instance type"
+    },
+    "MinionInstanceType": {
+      "Description": "salt-master EC2 Instance Type",
+      "Type": "String",
+      "Default": "t2.small",
+      "AllowedValues": [
+        "t2.micro",
+        "t2.small",
+        "t2.medium",
+        "t2.large"
+      ],
+      "ConstraintDescription": "Must be a valid EC2 instance type"
+    }
+  },
+  "Mappings": {
+    "RegionalAMIs": {
+      "us-east-1": {
+        "ubuntu": "ami-d05e75b8"
+      },
+      "us-west-1": {
+        "ubuntu": "mi-df6a8b9b"
+      },
+      "us-west-2": {
+        "ubuntu": "ami-5189a661"
+      },
+      "eu-west-1": {
+        "ubuntu": "ami-47a23a30"
+      },
+      "eu-central-1": {
+        "ubuntu": "ami-accff2b1"
+      },
+      "ap-northeast-1": {
+        "ubuntu": "ami-96f1c1c4"
+      },
+      "ap-southeast-1": {
+        "ubuntu": "ami-936d9d93"
+      },
+      "ap-southeast-2": {
+        "ubuntu": "ami-69631053"
+      },
+      "sa-east-1": {
+        "ubuntu": "ami-4d883350"
+      }
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "534fda96-a2a3-4983-89ab-cf61520fbfbd": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 120,
+          "y": 180
+        },
+        "z": 1,
+        "embeds": [],
+        "dependson": [
+          "02b157a4-50ba-4d04-989a-9f80e2811e45"
+        ],
+        "isrelatedto": [
+          "02b157a4-50ba-4d04-989a-9f80e2811e45"
+        ]
+      },
+      "02b157a4-50ba-4d04-989a-9f80e2811e45": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 220,
+          "y": 70
+        },
+        "z": 1,
+        "embeds": [],
+        "dependson": [
+          "01092141-4259-40eb-8b82-32b15281e59b"
+        ],
+        "isrelatedto": [
+          "02b157a4-50ba-4d04-989a-9f80e2811e45",
+          "01092141-4259-40eb-8b82-32b15281e59b"
+        ]
+      },
+      "84748b7a-1312-4143-af33-b3da8243ea31": {
+        "source": {
+          "id": "534fda96-a2a3-4983-89ab-cf61520fbfbd"
+        },
+        "target": {
+          "id": "02b157a4-50ba-4d04-989a-9f80e2811e45"
+        },
+        "z": 1
+      },
+      "f427f54c-e3ea-4774-8988-4972917a62b2": {
+        "source": {
+          "id": "4ef48522-8e46-40c7-b27a-0db49cd1664a"
+        },
+        "target": {
+          "id": "fb7d3bfd-f8e1-4fda-a2fa-39e3387dac8f"
+        },
+        "z": 2
+      },
+      "18bceb2a-efe4-4ced-a45f-16bd5220c79a": {
+        "source": {
+          "id": "071bb0e5-2b27-45d7-b232-1b9b78c13f1f"
+        },
+        "target": {
+          "id": "fb7d3bfd-f8e1-4fda-a2fa-39e3387dac8f"
+        },
+        "z": 3
+      },
+      "9b297632-e001-49a4-af36-fea7818b5997": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 279,
+          "y": 187.29166412353516
+        },
+        "z": 0,
+        "embeds": [],
+        "dependson": [
+          "02b157a4-50ba-4d04-989a-9f80e2811e45",
+          "534fda96-a2a3-4983-89ab-cf61520fbfbd"
+        ],
+        "isrelatedto": [
+          "02b157a4-50ba-4d04-989a-9f80e2811e45",
+          "534fda96-a2a3-4983-89ab-cf61520fbfbd",
+          "01092141-4259-40eb-8b82-32b15281e59b"
+        ]
+      },
+      "2af512f3-ea98-42fd-a615-07090fbf8a97": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 380,
+          "y": 190
+        },
+        "z": 0,
+        "embeds": [],
+        "dependson": [
+          "02b157a4-50ba-4d04-989a-9f80e2811e45",
+          "534fda96-a2a3-4983-89ab-cf61520fbfbd"
+        ],
+        "isrelatedto": [
+          "02b157a4-50ba-4d04-989a-9f80e2811e45",
+          "534fda96-a2a3-4983-89ab-cf61520fbfbd",
+          "01092141-4259-40eb-8b82-32b15281e59b"
+        ]
+      },
+      "01092141-4259-40eb-8b82-32b15281e59b": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 340,
+          "y": 70
+        },
+        "z": 0,
+        "embeds": []
+      }
+    }
+  },
+  "Resources": {
+    "master": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionalAMIs",
+            {
+              "Ref": "AWS::Region"
+            },
+            "ubuntu"
+          ]
+        },
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "InstanceType": {
+          "Ref": "MasterInstanceType"
+        },
+        "DisableApiTermination": "false",
+        "SourceDestCheck": "false",
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "Monitoring": "false",
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "SaltSecurityGroup"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "TargetSubnet"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "salt-master"
+          },
+          {
+            "Key": "environment",
+            "Value": {
+              "Ref": "EnvironmentName"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "add-apt-repository ppa:saltstack/salt -y\n",
+                "apt-get update -y\n",
+                "apt-get install salt-master -y\n",
+                "apt-get install salt-ssh -y\n",
+                "mkdir /srv/salt\n",
+                "mkdir /srv/salt/pillar\n",
+                "git clone https://github.com/saltstackme/salt-rocks.git /srv/salt-rocks\n",
+                "cat <<EOF > /etc/salt/master\n",
+                "auto_accept: True\n",
+                "file_roots:\n",
+                "  base:\n",
+                "    - /srv/salt\n",
+                "    - /srv/salt-rocks\n",
+                "pillar_roots:\n",
+                "  base:\n",
+                "    - /srv/salt/pillar\n",
+                "    - /srv/salt-rocks/pillar\n",
+                "EOF\n",
+                "service salt-master restart\n",
+                "apt-get install emacs24-nox -y\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "configSet1": [
+              "InstallSaltMaster"
+            ]
+          },
+          "InstallSaltMaster": {
+            "commands": {
+              "01_add_salt_repo": {
+                "command": "sudo add-apt-repository ppa:saltstack/salt -y"
+              },
+              "02_update_system": {
+                "command": "sudo apt-get update -y"
+              },
+              "03_install_salt_master": {
+                "command": "apt-get install salt-master -y"
+              },
+              "04_install_salt_ssh": {
+                "command": "apt-get install salt-ssh -y"
+              }
+            }
+          }
+        },
+        "AWS::CloudFormation::Designer": {
+          "id": "534fda96-a2a3-4983-89ab-cf61520fbfbd"
+        }
+      },
+      "DependsOn": []
+    },
+    "SaltSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "allow SSH connections from all",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "4505",
+            "ToPort": "4505",
+            "SourceSecurityGroupId": {
+              "Ref": "MinionSecurityGroup"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "4506",
+            "ToPort": "4506",
+            "SourceSecurityGroupId": {
+              "Ref": "MinionSecurityGroup"
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "02b157a4-50ba-4d04-989a-9f80e2811e45"
+        }
+      },
+      "DependsOn": [
+        "MinionSecurityGroup"
+      ]
+    },
+    "minion2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionalAMIs",
+            {
+              "Ref": "AWS::Region"
+            },
+            "ubuntu"
+          ]
+        },
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "InstanceType": {
+          "Ref": "MinionInstanceType"
+        },
+        "DisableApiTermination": "false",
+        "SourceDestCheck": "false",
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "Monitoring": "false",
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "MinionSecurityGroup"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "TargetSubnet"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "salt-minion2"
+          },
+          {
+            "Key": "environment",
+            "Value": {
+              "Ref": "EnvironmentName"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "add-apt-repository ppa:saltstack/salt -y\n",
+                "apt-get update -y\n",
+                "apt-get install salt-minion -y\n",
+                "apt-get install salt-ssh -y\n",
+                "cat <<EOF > /etc/salt/minion\n",
+                "master: ",
+                {
+                  "Fn::GetAtt": [
+                    "master",
+                    "PrivateDnsName"
+                  ]
+                },
+                "\n",
+                "EOF\n",
+                "service salt-minion restart\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "configSet1": [
+              "InstallSaltMinion"
+            ]
+          },
+          "InstallSaltMinion": {
+            "commands": {
+              "01_add_salt_repo": {
+                "command": "sudo add-apt-repository ppa:saltstack/salt -y"
+              },
+              "02_update_system": {
+                "command": "sudo apt-get update -y"
+              },
+              "03_install_salt_minion": {
+                "command": "apt-get install salt-minion -y"
+              },
+              "04_install_salt_ssh": {
+                "command": "apt-get install salt-ssh -y"
+              }
+            }
+          }
+        },
+        "AWS::CloudFormation::Designer": {
+          "id": "2af512f3-ea98-42fd-a615-07090fbf8a97"
+        }
+      },
+      "DependsOn": [
+        "master"
+      ]
+    },
+    "minion1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionalAMIs",
+            {
+              "Ref": "AWS::Region"
+            },
+            "ubuntu"
+          ]
+        },
+        "InstanceInitiatedShutdownBehavior": "stop",
+        "InstanceType": {
+          "Ref": "MinionInstanceType"
+        },
+        "DisableApiTermination": "false",
+        "SourceDestCheck": "false",
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "Monitoring": "false",
+        "NetworkInterfaces": [
+          {
+            "AssociatePublicIpAddress": "true",
+            "DeviceIndex": "0",
+            "GroupSet": [
+              {
+                "Ref": "MinionSecurityGroup"
+              }
+            ],
+            "SubnetId": {
+              "Ref": "TargetSubnet"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "salt-minion1"
+          },
+          {
+            "Key": "environment",
+            "Value": {
+              "Ref": "EnvironmentName"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash -xe\n",
+                "add-apt-repository ppa:saltstack/salt -y\n",
+                "apt-get update -y\n",
+                "apt-get install salt-minion -y\n",
+                "apt-get install salt-ssh -y\n",
+                "cat <<EOF > /etc/salt/minion\n",
+                "master: ",
+                {
+                  "Fn::GetAtt": [
+                    "master",
+                    "PrivateDnsName"
+                  ]
+                },
+                "\n",
+                "EOF\n",
+                "service salt-minion restart\n"
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "configSets": {
+            "configSet1": [
+              "InstallSaltMinion"
+            ]
+          },
+          "InstallSaltMinion": {
+            "commands": {
+              "01_add_salt_repo": {
+                "command": "sudo add-apt-repository ppa:saltstack/salt -y"
+              },
+              "02_update_system": {
+                "command": "sudo apt-get update -y"
+              },
+              "03_install_salt_minion": {
+                "command": "apt-get install salt-minion -y"
+              },
+              "04_install_salt_ssh": {
+                "command": "apt-get install salt-ssh -y"
+              }
+            }
+          }
+        },
+        "AWS::CloudFormation::Designer": {
+          "id": "9b297632-e001-49a4-af36-fea7818b5997"
+        }
+      },
+      "DependsOn": [
+        "master"
+      ]
+    },
+    "MinionSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "allow SSH connections from all",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "01092141-4259-40eb-8b82-32b15281e59b"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "master": {
+      "Description": "Salt Master instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "master",
+          "PublicDnsName"
+        ]
+      }
+    },
+    "minion1": {
+      "Description": "Salt Minion 1st instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "minion1",
+          "PublicDnsName"
+        ]
+      }
+    },
+    "minion2": {
+      "Description": "Salt Minion 2nd instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "minion2",
+          "PublicDnsName"
+        ]
+      }
+    }
+  }
+}
