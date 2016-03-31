@@ -17,8 +17,8 @@
       "ConstraintDescription" : "must be a list of an existing subnets in the selected Virtual Private Cloud."
     },
 
-    "AZs" : {
-      "Type": "AWS::EC2::AvailabilityZone::Name",
+    "AZ" : {
+      "Type": "String",
       "Description" : "The list of AvailabilityZones for your Virtual Private Cloud (VPC)",
       "ConstraintDescription" : "must be a list if valid EC2 availability zones for the selected Virtual Private Cloud",
       "Default" : "us-east-1a"
